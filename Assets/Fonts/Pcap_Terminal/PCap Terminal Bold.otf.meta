@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: ef71248b0a9148e43af9132156ec2d66
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: PCap Terminal
+  fontNames:
+  - PCap Terminal
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 0afc7c227384ec5489fca5f091976da9, type: 3}
+  - {fileID: 12800000, guid: 6ae9233bc0a107244a58cf14fd27dcdb, type: 3}
+  - {fileID: 12800000, guid: 0d67361e1c6d4a64b8b54d9fea624857, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
