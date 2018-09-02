@@ -45,7 +45,6 @@ public class PlayerHealth : MonoBehaviour {
 	private void Death() {
 		_animator.SetTrigger("Death");
 		gameObject.GetComponent<PlayerController>().isDead = true;
-//		Destroy(gameObject, 10.0f);
 	}
 
 }

@@ -10,13 +10,16 @@ public class PlayerController : MonoBehaviour {
 	
 	public float Speed;
 	private const float ROTATION_SPEED = 10f;
+	private const float AIM_ROTATION_SPEED = 300f;
 	private float HealthPoints;
+	private const float SHOT_POWER = 5;
 	
 	public Transform rightGunBone;
 	public Transform leftGunBone;
 	public Arsenal[] arsenal;
 
 	private AudioSource _audioSource;
+	
 	private Rigidbody _rigidbody;
 	private Animator _animator;
 	public GameObject Bullet;
@@ -24,29 +27,37 @@ public class PlayerController : MonoBehaviour {
 	public GameObject LeftBarrel;
 
 	private bool isNormalMode = true;
-	public bool isDead = false;
-	private bool firstButtonPressed = false;
-	private float timeOfFirstButton = 0f;
-	private bool reset = false;
+	public bool isDead;
+
+	private const float DOUBLECLICK_TIMING = 1.5f;
+	private bool firstButtonPressed;
+	private float timeOfFirstButton;
+	private bool reset;
+	
 	private int _misses;
 	private int _hit;
-	public int Accuracy = 0;
+	public int Accuracy;
+	
 	private bool shotGun;
 
 	void Awake() {
 		_rigidbody = GetComponent<Rigidbody>();
 		_animator = GetComponent<Animator> ();
 		_audioSource = GetComponent<AudioSource>();
+		
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
+		
 		if (arsenal.Length > 0)
 			SetArsenal (arsenal[(int) Weapon.TwoPistols].name);
-		}
+	}
+	
 	void FixedUpdate() {
 		if (isNormalMode && !isDead) {
 			Move();
 		}
 	}
+	
 	void Update() {
 		if (isDead) {
 			if (_hit != 0 || _misses != 0) {
@@ -54,6 +65,7 @@ public class PlayerController : MonoBehaviour {
 			}
 			return;
 		}
+		
 		if (Input.GetKey(KeyCode.I)) {
 			ChangeModeToInput();	
 		}
@@ -61,6 +73,7 @@ public class PlayerController : MonoBehaviour {
 		if (Input.GetKey(KeyCode.Escape) || DoubleJ()) {
 			ChangeModeToNormal();	
 		}
+		
 		if (isNormalMode) {
 		}
 
@@ -76,9 +89,9 @@ public class PlayerController : MonoBehaviour {
 				ChangeModeToInput();
 			}
 		}
-	}	
-	
-	public void SetArsenal(string name) {
+	}
+
+	private void SetArsenal(string name) {
 		foreach (Arsenal hand in arsenal) {
 			if (hand.name == name) {
 				if (rightGunBone.childCount > 0)
@@ -152,19 +165,19 @@ public class PlayerController : MonoBehaviour {
 		return direction;
 	}
 
-	public void ChangeModeToInput() {
+	private void ChangeModeToInput() {
 		isNormalMode = false;
 		_animator.SetBool("Aiming", true);
 		
 		EventSystem.current.SetSelectedGameObject(InputLine.gameObject, null);
 	}
 
-	public void ChangeModeToNormal() {
+	private void ChangeModeToNormal() {
 		InputLine.text = "";
 		isNormalMode = true;
 		_animator.SetBool("Aiming", false);
 		
-		EventSystem.current.SetSelectedGameObject(this.gameObject, null);
+		EventSystem.current.SetSelectedGameObject(gameObject, null);
 	}
 
 	private void AimAndShoot(string target) {
@@ -178,14 +191,14 @@ public class PlayerController : MonoBehaviour {
 		direction = new Vector3(direction.x, 0, direction.z);
 		if (direction != Vector3.zero) {
 			transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, direction,
-				ROTATION_SPEED * 30 * Time.deltaTime, 0.0f));
+				AIM_ROTATION_SPEED * Time.deltaTime, 0.0f));
 		}
 
 		_hit++;
 		Shoot(targetPosition);
 	}
 
-	public void Shoot(Vector3 targetPosition) {
+	private void Shoot(Vector3 targetPosition) {
 		_animator.SetTrigger("Attack");
 		_audioSource.Play();
 		if (shotGun) {
@@ -194,18 +207,18 @@ public class PlayerController : MonoBehaviour {
 			for (int i = 0; i < 9; i++) {
 				shells[i] = Instantiate(Bullet, RightBarrel.transform.position, RightBarrel.transform.rotation);
 				shells[i].transform.RotateAround(shells[i].transform.position, Vector3.up, deviation);
-				shells[i].GetComponent<Rigidbody>().AddForce(shells[i].transform.forward * 5);
+				shells[i].GetComponent<Rigidbody>().AddForce(shells[i].transform.forward * SHOT_POWER);
 				deviation += 1.25f;
 			}
 		} else {
 			var shell = Instantiate(Bullet, RightBarrel.transform.position, transform.rotation);
-			shell.GetComponent<Rigidbody>().AddForce((targetPosition - shell.transform.position) * 5);
+			shell.GetComponent<Rigidbody>().AddForce((targetPosition - shell.transform.position) * SHOT_POWER);
 		}
 	}
 	
 	private bool DoubleJ() {
 		if (Input.GetKeyDown(KeyCode.J) && firstButtonPressed) {
-			if (Time.time - timeOfFirstButton < 1.5f) {
+			if (Time.time - timeOfFirstButton < DOUBLECLICK_TIMING) {
 				return true;
 			} 
 			

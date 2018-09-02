@@ -9,7 +9,7 @@ public class CameraMoving : MonoBehaviour {
 	private float speed;
 	private const float MAX_SPEED = 0.45f;
 	
-	private Vector3 CameraOffset = new Vector3(0.0f, 7.8f, 5.0f);
+	private readonly Vector3 CameraOffset = new Vector3(0.0f, 7.8f, 5.0f);
 
 	void Update () {
 		if (!isPlayerFounded) {

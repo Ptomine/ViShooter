@@ -6,6 +6,9 @@ public class AIMManager : MonoBehaviour {
 
 	private Dictionary<int, List<string>> _names;
 	public Dictionary<string, GameObject> Targets;
+
+	private const int MIN_LENGTH = 3;
+	private const int MAX_LENGTH = 11;
 	
 	void Start () {
 		_names = buildDictionary();
@@ -17,13 +20,13 @@ public class AIMManager : MonoBehaviour {
 		string[] dictionary = textAsset.text.Split("\n"[0]);
 		
 		Dictionary<int, List<string>> words = new Dictionary<int, List<string>>();
-		for (int len = 3; len < 11; len++) {
+		for (int len = MIN_LENGTH; len < MAX_LENGTH; len++) {
 			words[len] = new List<string>();
 		}
 
 		foreach (string word in dictionary) {
 			int length = word.Length;
-			if (length < 11 && length > 2) {
+			if (length < MAX_LENGTH && length >= MIN_LENGTH) {
 				List<string> list = words[length];
 				list.Add(word);
 			}
@@ -34,7 +37,7 @@ public class AIMManager : MonoBehaviour {
 
 	public string NewTarget(GameObject target, int difficulty) {
 		bool isUnique = false;
-		var words = _names[Random.Range(3, 3 + difficulty > 9 ? 10 : 3 + difficulty)];
+		var words = _names[Random.Range(MIN_LENGTH, MIN_LENGTH + difficulty >= MAX_LENGTH ? MAX_LENGTH : MIN_LENGTH + difficulty)];
 		string targetName = "";
 		while (!isUnique) {
 			targetName = words[Random.Range(0, words.Count)];

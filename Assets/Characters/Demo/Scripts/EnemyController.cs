@@ -15,10 +15,14 @@ public class EnemyController : MonoBehaviour {
 	private Animator animator;
 	private NavMeshAgent _agent;
 	private GameObject _target;
-	public bool WithRifle = false;
+	public bool WithRifle;
 	public float HealthPoints = 1.0f;
-	private float reloading = 0.0f;
+	
+	private float reloading;
 	private const float RELOADING_TIME = 1.5f;
+	private const float MIN_SPEED = 0.25f;
+	private const float SHOOT_DISTANCE = 4.0f;
+	private const float HIT_DISTANCE = 0.502f;
 
 	public GameObject Bullet;
 	public GameObject Barrel;
@@ -42,14 +46,14 @@ public class EnemyController : MonoBehaviour {
 		}
 		if (_agent.isActiveAndEnabled) {
 			_agent.SetDestination(_target.transform.position);
-			if (_agent.velocity.magnitude < 0.25f) {
+			if (_agent.velocity.magnitude < MIN_SPEED) {
 				animator.SetBool("Aiming", true);
-				if (WithRifle && Vector3.Distance(transform.position, _target.transform.position) <= 4.0f &&
+				if (WithRifle && Vector3.Distance(transform.position, _target.transform.position) <= SHOOT_DISTANCE &&
 				    reloading <= 0) {
 					Shoot(_target.transform.position);
 				}
 
-				if (!WithRifle && Vector3.Distance(transform.position, _target.transform.position) <= 0.502f && reloading <= 0) {
+				if (!WithRifle && Vector3.Distance(transform.position, _target.transform.position) <= HIT_DISTANCE && reloading <= 0) {
 					Hit();
 				}
 			}
@@ -58,8 +62,8 @@ public class EnemyController : MonoBehaviour {
 
 		RotateCanvas();
 	}
-	
-	public void SetArsenal(string name) {
+
+	private void SetArsenal(string name) {
 		foreach (Arsenal hand in arsenal) {
 			if (hand.name == name) {
 				if (rightGunBone.childCount > 0)
@@ -89,7 +93,7 @@ public class EnemyController : MonoBehaviour {
 	public void PickRifle() {
 		SetArsenal(arsenal[(int) Weapon.Rifle].name);
 		WithRifle = true;
-		_agent.stoppingDistance = 4f;
+		_agent.stoppingDistance = SHOOT_DISTANCE;
 	}
 
 	private void RotateCanvas() {
@@ -107,7 +111,7 @@ public class EnemyController : MonoBehaviour {
 		animator.SetInteger("DamageID", Random.Range(0, 1));
 	}
 
-	public void Death() {
+	private void Death() {
 		if (WithRifle) {
 			Destroy(Instantiate(Drop, _agent.transform.position, _agent.transform.rotation).gameObject, 20.0f);
 		}
@@ -118,8 +122,8 @@ public class EnemyController : MonoBehaviour {
 		GetComponent<Collider>().enabled = false;
 
 	}
-	
-	public void Shoot(Vector3 targetPosition) {
+
+	private void Shoot(Vector3 targetPosition) {
 		animator.SetBool("Aiming", false);
 		animator.SetTrigger("Attack");
 		var shell = Instantiate(Bullet, Barrel.transform.position, transform.rotation);
@@ -127,7 +131,7 @@ public class EnemyController : MonoBehaviour {
 		reloading = RELOADING_TIME;
 	}
 
-	public void Hit() {
+	private void Hit() {
 		animator.SetBool("Aiming", false);
 		animator.SetTrigger("Attack");
 		Instantiate(Bullet, Barrel.transform.position, Barrel.transform.rotation);

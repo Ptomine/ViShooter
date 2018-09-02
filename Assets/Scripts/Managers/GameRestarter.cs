@@ -30,8 +30,8 @@ public class GameRestarter : MonoBehaviour {
 			}
 		}	
 	}
-	
-	public void ChangeScene() {
+
+	private void ChangeScene() {
 		StartCoroutine(LoadScene());
 	}
 
