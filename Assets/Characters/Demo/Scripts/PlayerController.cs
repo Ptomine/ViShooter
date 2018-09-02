@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour {
 	private const float ROTATION_SPEED = 10f;
 	private const float AIM_ROTATION_SPEED = 300f;
 	private float HealthPoints;
-	private const float SHOT_POWER = 5;
+	private const float SHOT_POWER = 5.0f;
 	
 	public Transform rightGunBone;
 	public Transform leftGunBone;
@@ -47,9 +47,10 @@ public class PlayerController : MonoBehaviour {
 		
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
-		
-		if (arsenal.Length > 0)
-			SetArsenal (arsenal[(int) Weapon.TwoPistols].name);
+
+		if (arsenal.Length > 0) {
+			SetArsenal(arsenal[(int) Weapon.TwoPistols].name);
+		}
 	}
 	
 	void FixedUpdate() {

@@ -17,10 +17,12 @@ public class EnemyController : MonoBehaviour {
 	private GameObject _target;
 	public bool WithRifle;
 	public float HealthPoints = 1.0f;
+	private const float CORPSE_LIFETIME = 5.0f;
 	
 	private float reloading;
 	private const float RELOADING_TIME = 1.5f;
 	private const float MIN_SPEED = 0.25f;
+	private const float SHOT_POWER = 5.0f;
 	private const float SHOOT_DISTANCE = 4.0f;
 	private const float HIT_DISTANCE = 0.502f;
 
@@ -28,14 +30,16 @@ public class EnemyController : MonoBehaviour {
 	public GameObject Barrel;
 
 	public GameObject Drop;
+	private const float DROPPED_ITEM_LIFETIME = 20.0f;
 
 	
 	void Awake() {
 		animator = GetComponent<Animator>();
 		_agent = GetComponent<NavMeshAgent>();
 		_target = GameObject.FindGameObjectWithTag("Player");
-		if (arsenal.Length > 0)
-			SetArsenal (arsenal[(int) Weapon.Empty].name);
+		if (arsenal.Length > 0) {
+			SetArsenal(arsenal[(int) Weapon.Empty].name);
+		}
 
 	}
 
@@ -113,11 +117,11 @@ public class EnemyController : MonoBehaviour {
 
 	private void Death() {
 		if (WithRifle) {
-			Destroy(Instantiate(Drop, _agent.transform.position, _agent.transform.rotation).gameObject, 20.0f);
+			Destroy(Instantiate(Drop, _agent.transform.position, _agent.transform.rotation).gameObject, DROPPED_ITEM_LIFETIME);
 		}
 		_agent.enabled = false;
 		animator.SetTrigger("Death");
-		Destroy(gameObject, 5.0f);
+		Destroy(gameObject, CORPSE_LIFETIME);
 		Text.color = Color.grey;
 		GetComponent<Collider>().enabled = false;
 
@@ -127,7 +131,7 @@ public class EnemyController : MonoBehaviour {
 		animator.SetBool("Aiming", false);
 		animator.SetTrigger("Attack");
 		var shell = Instantiate(Bullet, Barrel.transform.position, transform.rotation);
-		shell.GetComponent<Rigidbody>().AddForce((targetPosition - shell.transform.position) * 5);
+		shell.GetComponent<Rigidbody>().AddForce((targetPosition - shell.transform.position) * SHOT_POWER);
 		reloading = RELOADING_TIME;
 	}
 
